@@ -1,0 +1,59 @@
+import /init.microtrust.rc
+
+on init
+    setprop sys.usb.ffs.aio_compat 1
+    setprop sys.usb.configfs 1
+    export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw:/system/lib64/hw
+
+on fs
+    install_keyring
+
+service gatekeeper-1-0 /system/bin/android.hardware.gatekeeper@1.0-service
+    interface android.hardware.gatekeeper@1.0::IGatekeeper default
+    user root
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+service keymaster-4-1 /system/bin/android.hardware.keymaster@4.1-service.beanpod
+    interface android.hardware.keymaster@4.0::IKeymasterDevice default
+    interface android.hardware.keymaster@4.1::IKeymasterDevice default
+    user root
+    group root drmrpc
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
+
+service vibrator-selene /system/bin/hw/android.hardware.vibrator-service.selene
+    user root
+    group root
+    class hal
+    seclabel u:r:recovery:s0
+
+on property:vendor.sys.listener.registered=true
+    start keymaster-4-1
+    start gatekeeper-1-0
+
+on property:ro.crypto.state=unsupported
+    stop teei_daemon
+    stop keymaster-4-1
+    stop gatekeeper-1-0
+
+on property:ro.crypto.state=unencrypted
+    stop teei_daemon
+    stop keymaster-4-1
+    stop gatekeeper-1-0
+
+on property:twrp.all.users.decrypted=true
+    stop teei_daemon
+    stop keymaster-4-1
+    stop gatekeeper-1-0
+
+on boot
+    start boot-hal-1-2
+    start health-hal-2-1
+    start vibrator-selene
+
+# Enable DT2W
+on post-fs
+    write /sys/devices/platform/11007000.i2c0/i2c-0/0-0038/fts_gesture_mode "1"

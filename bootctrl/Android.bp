@@ -1,0 +1,28 @@
+cc_library_shared {
+    name: "android.hardware.boot@1.2-mtkimpl",
+    stem: "android.hardware.boot@1.0-impl-1.2-mtkimpl",
+    defaults: [
+        "hidl_defaults",
+        "libboot_control_defaults",
+    ],
+    relative_install_path: "hw",
+    vendor: true,
+    recovery_available: true,
+    srcs: ["BootControl.cpp", "boot_region_control.cpp"],
+
+    header_libs: ["device_kernel_headers"],
+
+    shared_libs: [
+        "liblog",
+        "libhidlbase",
+        "libhardware",
+        "libutils",
+        "android.hardware.boot@1.0",
+        "android.hardware.boot@1.1",
+        "android.hardware.boot@1.2"
+    ],
+    static_libs: [
+        "libboot_control",
+        "libfstab",
+    ],
+}
