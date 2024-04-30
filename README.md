@@ -1,4 +1,4 @@
-PBRP Device Tree for Redmi 10 (selene) MIUI 12.5
+TWRP Device Tree for Redmi 10 (selene) MIUI 12.5
 ===========================================
 
 The Redmi 10 is a budget range smartphone from Redmi, Released 2021, August 20
